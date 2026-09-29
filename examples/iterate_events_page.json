@@ -1,0 +1,7 @@
+{
+  "query": "tag:prod AND level:error",
+  "from": "-1h",
+  "until": "now",
+  "size": 50,
+  "order": "desc"
+}

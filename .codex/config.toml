@@ -1,0 +1,15 @@
+[mcp_servers.loggly]
+command = "node"
+args = ["src/index.js"]
+cwd = "."
+
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+
+[mcp_servers.loggly.env]
+LOGGLY_AUTH_MODE = "bearer"
+LOGGLY_SUBDOMAIN = "<your_loggly_subdomain>"
+LOGGLY_TOKEN = "<your_loggly_api_token>"
+LOGGLY_MAX_RETRIES = "2"
+LOGGLY_REQUEST_TIMEOUT_MS = "15000"
+LOGGLY_LOG_LEVEL = "info"

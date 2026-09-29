@@ -1,0 +1,7 @@
+{
+  "field_name": "host",
+  "query": "tag:prod",
+  "from": "-24h",
+  "until": "now",
+  "facet_size": 10
+}

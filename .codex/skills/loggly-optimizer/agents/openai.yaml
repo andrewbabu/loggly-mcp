@@ -1,0 +1,4 @@
+interface:
+  display_name: "loggly Optimizer"
+  short_description: "Run low-token, staged loggly investigations with compact evidence summaries"
+  default_prompt: "Investigate this loggly issue using a low-token workflow: start with counts/facets, narrow aggressively, pull minimal raw events, and return grouped high-signal findings with timestamps."

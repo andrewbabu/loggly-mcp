@@ -1,0 +1,127 @@
+{
+  "name": "loggly-api-mcp",
+  "version": "1.3.0",
+  "description": "Read-only MCP server for Loggly /apiv2 APIs plus RDAP/GreyNoise/AbuseIPDB IP intelligence.",
+  "tools": [
+    {
+      "name": "connection_test",
+      "title": "Connection Test",
+      "description": "Validates Loggly credentials by creating a small search and returning the RSID."
+    },
+    {
+      "name": "create_search",
+      "title": "Create Search",
+      "description": "Creates a Loggly search and returns its RSID metadata."
+    },
+    {
+      "name": "get_events",
+      "title": "Get Events",
+      "description": "Retrieves event results for a previously-created RSID from /apiv2/events."
+    },
+    {
+      "name": "search_and_get_events",
+      "title": "Search And Get Events",
+      "description": "Creates a search then fetches one page from legacy /apiv2/events using the returned RSID."
+    },
+    {
+      "name": "count_events",
+      "title": "Count Events",
+      "description": "Calls /apiv2/events/count to return event count and optional volume."
+    },
+    {
+      "name": "iterate_events_page",
+      "title": "Iterate Events Page",
+      "description": "Calls /apiv2/events/iterate with query parameters and returns the first page plus next URL."
+    },
+    {
+      "name": "iterate_events_next",
+      "title": "Iterate Events Next",
+      "description": "Fetches the next page from /apiv2/events/iterate using the exact next URL returned by the previous page."
+    },
+    {
+      "name": "volume_metrics",
+      "title": "Volume Metrics",
+      "description": "Calls /apiv2/volume-metrics to retrieve count/volume grouped or filtered by host/app/log type/tag."
+    },
+    {
+      "name": "stats_query",
+      "title": "Stats Query",
+      "description": "Calls /apiv2/stats/<stat_type>/<field> for numeric field statistics."
+    },
+    {
+      "name": "list_fields",
+      "title": "List Fields",
+      "description": "Calls /apiv2/fields/ to return parsed field names in the selected time range."
+    },
+    {
+      "name": "field_facets",
+      "title": "Field Facets",
+      "description": "Calls /apiv2/fields/<field>/ to return terms and counts for a specific field."
+    },
+    {
+      "name": "raw_api_call",
+      "title": "Raw API Call",
+      "description": "Makes a GET request to a Loggly API path. Useful while discovering exact endpoint behavior."
+    },
+    {
+      "name": "search_logs",
+      "title": "Search Logs (Aggregated)",
+      "description": "Runs a query and returns an aggregated summary (totals, top hosts/paths/status codes/user agents, timeline, sample events) instead of raw events."
+    },
+    {
+      "name": "traffic_by_ip",
+      "title": "Traffic By IP",
+      "description": "Aggregated traffic summary scoped to a single IP address."
+    },
+    {
+      "name": "traffic_by_host",
+      "title": "Traffic By Host",
+      "description": "Aggregated traffic summary scoped to a single hostname."
+    },
+    {
+      "name": "traffic_by_path",
+      "title": "Traffic By Path",
+      "description": "Aggregated traffic summary scoped to a single request path."
+    },
+    {
+      "name": "group_by_ip",
+      "title": "Group By IP",
+      "description": "Facet counts by IP for a query/time range."
+    },
+    {
+      "name": "group_by_path",
+      "title": "Group By Path",
+      "description": "Facet counts by path for a query/time range."
+    },
+    {
+      "name": "group_by_user_agent",
+      "title": "Group By User Agent",
+      "description": "Facet counts by User-Agent for a query/time range."
+    },
+    {
+      "name": "timeline",
+      "title": "Timeline",
+      "description": "Bucketed event counts over a time range for a query."
+    },
+    {
+      "name": "sample_events",
+      "title": "Sample Events",
+      "description": "Returns a small number of representative events for a query."
+    },
+    {
+      "name": "rdap_lookup",
+      "title": "RDAP Lookup",
+      "description": "Looks up IP ownership/network registration data via public RDAP (rdap.org)."
+    },
+    {
+      "name": "ip_reputation",
+      "title": "IP Reputation",
+      "description": "Checks GreyNoise and AbuseIPDB for an IP (requires API keys)."
+    },
+    {
+      "name": "get_ip_context",
+      "title": "Get IP Context",
+      "description": "Combines RDAP, GreyNoise/AbuseIPDB, and cross-account Loggly traffic into one normalized IP profile."
+    }
+  ]
+}

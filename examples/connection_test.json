@@ -1,0 +1,6 @@
+{
+  "query": "*",
+  "from": "-15m",
+  "until": "now",
+  "size": 1
+}
