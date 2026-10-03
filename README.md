@@ -1,5 +1,7 @@
 # Loggly MCP
 
+[![loggly-mcp MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/andrewbabu/loggly-mcp/badges/card.svg)](https://glama.ai/mcp/servers/andrewbabu/loggly-mcp)
+
 Read-only **Model Context Protocol (MCP) server** for Loggly `/apiv2/*` APIs, plus IP
 intelligence (RDAP, GreyNoise, AbuseIPDB). Exposes Loggly search/analytics/field tools,
 aggregation-first traffic tools, and IP-context tools, while blocking write endpoints.
@@ -13,6 +15,31 @@ For efficient log retrieval (less token use) and summarization, pair this server
 ---
 
 # Quickstart
+
+## Install from npm
+
+```bash
+LOGGLY_SUBDOMAIN=your-subdomain LOGGLY_TOKEN=your-token npx -y @andrewbabu/loggly-mcp
+```
+
+MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "loggly": {
+      "command": "npx",
+      "args": ["-y", "@andrewbabu/loggly-mcp"],
+      "env": {
+        "LOGGLY_SUBDOMAIN": "your-subdomain",
+        "LOGGLY_TOKEN": "your-token"
+      }
+    }
+  }
+}
+```
+
+## Run from source
 
 ```bash
 git clone https://github.com/andrewbabu/loggly-mcp.git

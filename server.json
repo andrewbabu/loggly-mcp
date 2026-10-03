@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.andrewbabu/loggly-mcp",
+  "description": "Read-only Loggly search and analytics with aggregation-first traffic tools and IP intelligence.",
+  "repository": {
+    "url": "https://github.com/andrewbabu/loggly-mcp",
+    "source": "github"
+  },
+  "version": "1.3.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@andrewbabu/loggly-mcp",
+      "version": "1.3.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "LOGGLY_SUBDOMAIN",
+          "description": "Loggly account subdomain or full Loggly URL (e.g. your-subdomain or https://your-subdomain.loggly.com).",
+          "isRequired": true,
+          "format": "string"
+        },
+        {
+          "name": "LOGGLY_TOKEN",
+          "description": "Loggly API token (read access).",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

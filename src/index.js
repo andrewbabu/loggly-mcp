@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { ContentLengthStdioServerTransport } from "./contentLengthStdioTransport.js";
 import { createServer, log, SERVER_VERSION, ACCOUNTS, DEFAULT_ACCOUNT_NAME } from "./server.js";
 
