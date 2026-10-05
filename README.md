@@ -2,6 +2,8 @@
 
 [![loggly-mcp MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/andrewbabu/loggly-mcp/badges/card.svg)](https://glama.ai/mcp/servers/andrewbabu/loggly-mcp)
 
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/andrewbabu/loggly-mcp)
+
 Read-only **Model Context Protocol (MCP) server** for Loggly `/apiv2/*` APIs, plus IP
 intelligence (RDAP, GreyNoise, AbuseIPDB). Exposes Loggly search/analytics/field tools,
 aggregation-first traffic tools, and IP-context tools, while blocking write endpoints.
