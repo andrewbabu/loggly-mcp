@@ -827,6 +827,30 @@ function mergeScopingResolution(result, scoping) {
   return result;
 }
 
+// Raw sample events are optional context. Loggly answers /apiv2/events/iterate with a 500 when
+// size=0, so no request is made for sample_size 0, and a failed sample request never discards
+// the aggregated summary (counts and facets come from separate, cheaper endpoints).
+async function fetchSampleEvents(account, { query, from, until, sample_size }) {
+  if (!sample_size || sample_size < 1) {
+    return { events: [], note: null };
+  }
+
+  try {
+    return await logglyGet(account, "/apiv2/events/iterate", {
+      q: query,
+      from,
+      until,
+      size: sample_size,
+      order: "desc"
+    });
+  } catch (error) {
+    return {
+      events: [],
+      note: `Sample events unavailable: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
+}
+
 // Aggregation-first traffic summary: total + faceted breakdowns + a bucketed timeline + a small
 // representative sample, instead of raw event dumps. This is the shape callers (like the bot
 // traffic triage skill) should consume by default.
@@ -871,7 +895,7 @@ async function aggregateTraffic(account, options) {
         facet_size: top_n
       }),
       computeTimeline(account, query, from, until, bucket_count),
-      logglyGet(account, "/apiv2/events/iterate", { q: query, from, until, size: sample_size, order: "desc" })
+      fetchSampleEvents(account, { query, from, until, sample_size })
     ]);
 
   return {
@@ -890,6 +914,7 @@ async function aggregateTraffic(account, options) {
     timeline: timelineResult.buckets,
     timeline_note: timelineResult.note,
     sample_events: Array.isArray(sampleResult?.events) ? sampleResult.events.slice(0, sample_size) : [],
+    sample_note: sampleResult?.note || null,
     field_mapping: fieldNames,
     discovered_fields: discovered,
     ambiguous_fields: ambiguous,
@@ -1001,7 +1026,32 @@ async function getIpContext({ ip, account, ip_field, host_field, path_field }) {
   };
 }
 
+// Loggly splits dotted values such as IP addresses at the dots, so a wildcard like
+// json.ClientIp:163.172.168.* also matches addresses that merely share one piece with the prefix
+// (for example 172.121.11.69). Counts from such queries are inflated and must not be trusted.
+const IP_WILDCARD_RE = /:\s*\(?\s*"?\d{1,3}(?:\.\d{1,3}){0,2}\.\*/;
+
+function queryWarnings(query) {
+  if (typeof query !== "string" || !IP_WILDCARD_RE.test(query)) {
+    return [];
+  }
+
+  return [
+    "Query contains a wildcard on a dotted IP address (for example 173.252.82.*). Loggly splits " +
+      "IP addresses at the dots, so this also matches unrelated addresses that share one piece " +
+      "with the prefix, and counts are inflated (a test returned about 74% unrelated addresses). " +
+      "Query exact IP addresses instead, or keep only returned values that really start with the prefix."
+  ];
+}
+
 function formatToolResult(data) {
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const warnings = queryWarnings(data.query);
+    if (warnings.length > 0) {
+      data = { ...data, warnings: [...(Array.isArray(data.warnings) ? data.warnings : []), ...warnings] };
+    }
+  }
+
   if (typeof data === "string") {
     return {
       content: [

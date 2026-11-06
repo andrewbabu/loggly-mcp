@@ -4,6 +4,8 @@
 
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/andrewbabu/loggly-mcp)
 
+[![Loggly MCP server](https://mcprush.com/badge/loggly-mcp/card.svg)](https://mcprush.com/to/loggly-mcp?ref=badge)
+
 Read-only **Model Context Protocol (MCP) server** for Loggly `/apiv2/*` APIs, plus IP
 intelligence (RDAP, GreyNoise, AbuseIPDB). Exposes Loggly search/analytics/field tools,
 aggregation-first traffic tools, and IP-context tools, while blocking write endpoints.

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- `rdap_lookup` and `get_ip_context` now return only network-level facts: `name`, `organization`
+  (registrant organisation only), `country`, `cidr`, `start_address`, `end_address` and `type`.
+  The raw RDAP object, remarks and all contact cards (names, emails, phone numbers) are no longer
+  returned. This removes personal data and thousands of tokens per IP.
+- `search_logs` (and the other summary tools built on it) no longer calls
+  `/apiv2/events/iterate` when `sample_size` is 0, which made Loggly return a 500 regardless of
+  data volume. A failed sample request now yields `sample_note` instead of failing the summary.
+- Tool results now include a `warnings` entry when the query has a wildcard on a dotted IP
+  address (for example `json.ClientIp:173.252.82.*`). Loggly splits IPs at the dots, so such
+  queries match unrelated addresses and inflate counts.
+
 ## [1.3.0] - 2026-09-30
 
 - Added discovery-first field resolution: `search_logs`, `traffic_by_ip`/`host`/`path`,

@@ -55,19 +55,78 @@ async function fetchJsonWithTimeout(url, options = {}) {
   }
 }
 
-function extractRdapOrgName(rdap) {
+function vcardValue(entity, key) {
+  const vcard = entity?.vcardArray;
+  if (!Array.isArray(vcard) || !Array.isArray(vcard[1])) {
+    return null;
+  }
+  const entry = vcard[1].find((item) => Array.isArray(item) && item[0] === key);
+  return entry ? entry : null;
+}
+
+// The registrant organisation only. RDAP also lists technical/abuse/administrative contacts
+// (names, emails, phone numbers); those are deliberately never read. An entity of kind
+// "individual" is a person, so it is skipped as well.
+function findRegistrantOrg(rdap) {
   const entities = Array.isArray(rdap?.entities) ? rdap.entities : [];
   for (const entity of entities) {
-    const vcard = entity?.vcardArray;
-    if (!Array.isArray(vcard) || !Array.isArray(vcard[1])) {
+    if (!Array.isArray(entity?.roles) || !entity.roles.includes("registrant")) {
       continue;
     }
-    const fnEntry = vcard[1].find((entry) => Array.isArray(entry) && entry[0] === "fn");
-    if (fnEntry && typeof fnEntry[3] === "string") {
-      return fnEntry[3];
+    const kind = vcardValue(entity, "kind");
+    if (kind && kind[3] === "individual") {
+      continue;
     }
+    return entity;
   }
   return null;
+}
+
+function extractRdapOrgName(rdap) {
+  const entity = findRegistrantOrg(rdap);
+  const fn = entity ? vcardValue(entity, "fn") : null;
+  return fn && typeof fn[3] === "string" ? fn[3] : null;
+}
+
+// ARIN records carry no country field; the registrant organisation's address label ends with the
+// country name. Only that last line is used, and only for an organisation (never a person).
+function extractRdapCountry(rdap) {
+  if (typeof rdap?.country === "string" && rdap.country) {
+    return rdap.country;
+  }
+  const entity = findRegistrantOrg(rdap);
+  const adr = entity ? vcardValue(entity, "adr") : null;
+  const label = adr && adr[1] && typeof adr[1].label === "string" ? adr[1].label : null;
+  if (!label) {
+    return null;
+  }
+  const lines = label.split("\n").map((line) => line.trim()).filter(Boolean);
+  return lines.length > 0 ? lines[lines.length - 1] : null;
+}
+
+function extractRdapCidrs(rdap) {
+  const cidrs = Array.isArray(rdap?.cidr0_cidrs) ? rdap.cidr0_cidrs : [];
+  return cidrs
+    .map((entry) => {
+      const prefix = entry?.v4prefix || entry?.v6prefix;
+      return prefix && Number.isInteger(entry?.length) ? `${prefix}/${entry.length}` : null;
+    })
+    .filter(Boolean);
+}
+
+// Reduces a raw RDAP response to network-level facts only. Contact cards, remarks and the raw
+// object are intentionally dropped: they hold personal data and cost thousands of tokens per IP.
+export function summarizeRdap(body) {
+  return {
+    available: true,
+    name: body?.name || null,
+    organization: extractRdapOrgName(body),
+    country: extractRdapCountry(body),
+    cidr: extractRdapCidrs(body),
+    start_address: body?.startAddress || null,
+    end_address: body?.endAddress || null,
+    type: body?.type || null
+  };
 }
 
 // RDAP via rdap.org's public bootstrap redirector — routes to whichever RIR (ARIN/RIPE/APNIC/
@@ -88,22 +147,7 @@ export async function rdapLookup(ip) {
     };
   }
 
-  const remarks = Array.isArray(body?.remarks)
-    ? body.remarks.flatMap((remark) => (Array.isArray(remark?.description) ? remark.description : []))
-    : [];
-
-  return {
-    available: true,
-    handle: body?.handle || null,
-    name: body?.name || null,
-    type: body?.type || null,
-    country: body?.country || null,
-    start_address: body?.startAddress || null,
-    end_address: body?.endAddress || null,
-    organization: extractRdapOrgName(body),
-    remarks,
-    raw: body
-  };
+  return summarizeRdap(body);
 }
 
 // GreyNoise Community API — answers "is this IP known internet-wide scanning noise, or does it
